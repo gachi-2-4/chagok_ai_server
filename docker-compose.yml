@@ -1,0 +1,32 @@
+services:
+  ai:
+    build: .
+    env_file: .env
+    environment:
+      LAW_DB_URL: postgresql://chagok:chagok@lawdb:5432/chagok_law
+    ports:
+      - "8000:8000"
+    depends_on:
+      lawdb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  lawdb:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: chagok
+      POSTGRES_PASSWORD: chagok
+      POSTGRES_DB: chagok_law
+    volumes:
+      - lawdb-data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chagok -d chagok_law"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  lawdb-data:

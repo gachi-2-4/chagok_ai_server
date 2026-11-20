@@ -1,0 +1,31 @@
+{
+  "_note": "규칙 엔진 기준값. 법령 DB(legal_thresholds 테이블)가 없을 때도 이 파일로 동작합니다. 값은 매년 고시·개정 때 반드시 확인하고 갱신하세요.",
+  "thresholds": [
+    { "key": "MINIMUM_WAGE_HOURLY", "regionGroup": null, "value": 10030, "value2": null, "effectiveFrom": "2025-01-01", "effectiveTo": "2025-12-31", "lawName": "최저임금법", "article": "제6조", "note": "2025년 최저임금 시급" },
+    { "key": "MINIMUM_WAGE_HOURLY", "regionGroup": null, "value": 10320, "value2": null, "effectiveFrom": "2026-01-01", "effectiveTo": null, "lawName": "최저임금법", "article": "제6조", "note": "2026년 최저임금 시급. 2027년 고시 후 effectiveTo를 닫고 새 값을 추가" },
+
+    { "key": "PRIORITY_REPAYMENT", "regionGroup": "SEOUL", "value": 165000000, "value2": 55000000, "effectiveFrom": "2023-02-21", "effectiveTo": null, "lawName": "주택임대차보호법 시행령", "article": "제11조", "note": "value: 보증금 상한, value2: 최우선변제 금액" },
+    { "key": "PRIORITY_REPAYMENT", "regionGroup": "OVERCROWDED", "value": 145000000, "value2": 48000000, "effectiveFrom": "2023-02-21", "effectiveTo": null, "lawName": "주택임대차보호법 시행령", "article": "제11조", "note": "과밀억제권역(서울 제외), 세종, 용인, 화성, 김포" },
+    { "key": "PRIORITY_REPAYMENT", "regionGroup": "METRO", "value": 85000000, "value2": 28000000, "effectiveFrom": "2023-02-21", "effectiveTo": null, "lawName": "주택임대차보호법 시행령", "article": "제11조", "note": "광역시(과밀억제권역·군 제외), 안산, 광명, 파주, 이천, 평택" },
+    { "key": "PRIORITY_REPAYMENT", "regionGroup": "OTHER", "value": 75000000, "value2": 25000000, "effectiveFrom": "2023-02-21", "effectiveTo": null, "lawName": "주택임대차보호법 시행령", "article": "제11조", "note": "그 밖의 지역" },
+
+    { "key": "INTEREST_RATE_CAP", "regionGroup": null, "value": 0.2, "value2": null, "effectiveFrom": "2021-07-07", "effectiveTo": null, "lawName": "이자제한법", "article": "제2조", "note": "연 20%" },
+    { "key": "MINOR_AGE", "regionGroup": null, "value": 19, "value2": null, "effectiveFrom": "2013-07-01", "effectiveTo": null, "lawName": "민법", "article": "제5조", "note": "만 19세 미만 미성년자" },
+    { "key": "YOUTH_WORKER_AGE", "regionGroup": null, "value": 18, "value2": null, "effectiveFrom": "2000-01-01", "effectiveTo": null, "lawName": "근로기준법", "article": "제69조", "note": "만 18세 미만 연소근로자" },
+    { "key": "YOUTH_DAILY_HOURS", "regionGroup": null, "value": 7, "value2": null, "effectiveFrom": "2018-07-01", "effectiveTo": null, "lawName": "근로기준법", "article": "제69조", "note": "1일 7시간" },
+    { "key": "YOUTH_WEEKLY_HOURS", "regionGroup": null, "value": 35, "value2": null, "effectiveFrom": "2018-07-01", "effectiveTo": null, "lawName": "근로기준법", "article": "제69조", "note": "1주 35시간" }
+  ],
+  "regionGroups": {
+    "SEOUL": { "sido": ["서울특별시"], "sigungu": [] },
+    "OVERCROWDED": {
+      "sido": ["세종특별자치시"],
+      "sigungu": ["의정부시", "구리시", "남양주시", "하남시", "고양시", "수원시", "성남시", "안양시", "부천시", "광명시", "과천시", "의왕시", "군포시", "시흥시", "용인시", "화성시", "김포시"],
+      "incheonExceptSigungu": ["강화군", "옹진군"]
+    },
+    "METRO": {
+      "sido": ["부산광역시", "대구광역시", "광주광역시", "대전광역시", "울산광역시"],
+      "sigungu": ["안산시", "파주시", "이천시", "평택시"],
+      "exceptCounty": true
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# 서버 OCR(선택). 텍스트 PDF와 APP 기기 OCR(ocrResult)만 쓰면 설치하지 않아도 됩니다.
+# 오라클 프리티어(ARM)에서 설치가 무거우니 필요할 때만 설치하세요.
+paddlepaddle>=2.6
+paddleocr>=2.8
+pillow-heif>=0.16
