@@ -57,7 +57,7 @@ async def analyze(req: AnalysisRequest, settings: Settings, be: BackendClient, l
     raw = await ex.extract(document, classification.docType, req.base_date, llm)
     fields = ex.build_fields(raw, document, settings.review_confidence)
     keys = {f.key for f in fields}
-    conditions = ex.build_conditions(raw, keys)
+    conditions = ex.build_conditions(raw, fields)
     events = ex.build_events(raw, keys, conditions)
     parties = ex.build_parties(raw)
 

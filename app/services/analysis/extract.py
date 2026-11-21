@@ -182,19 +182,31 @@ def build_parties(raw: _LLMExtraction) -> list[Party]:
     return [Party(role=p.role.upper(), name=p.name) for p in raw.parties if p.name.strip()]
 
 
-def build_conditions(raw: _LLMExtraction, field_keys: set[str]) -> Conditions:
+def build_conditions(raw: _LLMExtraction, fields: list[Field]) -> Conditions:
+    """반복 납부 규칙. 시작일·종료일이 비어 있으면 첫 납부 일정과 계약 만료일로 채웁니다."""
+    by_key = {f.key: f for f in fields}
+    contract_end = by_key.get("contractEndDate")
+    end_default = contract_end.value if contract_end and isinstance(contract_end.value, str) else None
+    first_payment = {}
+    for e in raw.calendarEvents:
+        d = parse_iso_date(e.date)
+        if e.type == "PAYMENT" and d and (e.fieldKey not in first_payment or d < first_payment[e.fieldKey]):
+            first_payment[e.fieldKey] = d
+
     schedules = []
     for s in raw.paymentSchedules:
-        if s.fieldKey not in field_keys:
+        if s.fieldKey not in by_key:
             continue
+        start = parse_iso_date(s.startDate) or first_payment.get(s.fieldKey)
+        end = parse_iso_date(s.endDate) or (end_default if s.recurrence != "ONCE" else None)
         schedules.append(
             PaymentSchedule(
                 fieldKey=s.fieldKey,
                 label=s.label,
                 recurrence=s.recurrence,
                 dayOfMonth=s.dayOfMonth if s.dayOfMonth and 1 <= s.dayOfMonth <= 31 else None,
-                startDate=parse_iso_date(s.startDate),
-                endDate=parse_iso_date(s.endDate),
+                startDate=start,
+                endDate=end if end and (not start or end >= start) else None,
             )
         )
     return Conditions(paymentSchedules=schedules)

@@ -157,7 +157,7 @@ def _priority_repayment(ctx: RuleContext, out: RuleResult) -> None:
                 code="PRIORITY_REPAYMENT",
                 severity="LOW",
                 title="보증금 일부를 먼저 돌려받을 수 있는 대상이에요",
-                explanation=f"{area} 기준 보증금 {format_won(int(rule.value))} 이하는 집이 경매로 넘어가도 최대 {format_won(int(rule.value2 or 0))}까지 먼저 돌려받을 수 있어요. 전입신고를 해 둬야 해요.",
+                explanation=f"{area} 기준 보증금 {format_won(int(rule.value))} 이하는 집이 경매로 넘어가도 최대 {format_won(min(deposit, int(rule.value2 or 0)))}까지 먼저 돌려받을 수 있어요. 전입신고를 해 둬야 해요.",
                 law_name=rule.law_name,
                 article=rule.article,
                 field_key="deposit",
