@@ -35,6 +35,11 @@ echo "== 4. 가상환경 + 패키지 =="
 UV_NO_CACHE=1 "$UV" pip install --python .venv/bin/python -r requirements.txt
 .venv/bin/python --version
 
+# Oracle Linux 등 SELinux 가 켜진 서버: 홈 폴더의 실행 파일을 서비스가 실행할 수 있게 표시
+if command -v getenforce >/dev/null && [ "$(getenforce)" = "Enforcing" ]; then
+  sudo chcon -R -t bin_t .venv/bin "$("$UV" python dir)"
+fi
+
 echo "== 5. 확인 =="
 [ -f .env ] || { echo "!! .env 파일이 없어요. 먼저 .env 를 올리세요."; exit 1; }
 [ -f data/law_index.npz ] || echo "!! data/law_index.npz 가 없어요. 법령 검색 없이 규칙 엔진만 동작합니다."
