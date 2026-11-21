@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# 새 작은 서버 준비: 스왑 → git → 코드 받기 → (.env 가 있으면) 설치까지.
+# 새 작은 서버 준비: 스왑 → 코드 받기 → (.env 가 있으면) 설치까지. dnf/apt 를 쓰지 않습니다 (메모리 500MB 서버에서 dnf 가 죽음).
 #   curl -sL https://raw.githubusercontent.com/gachi-2-4/chagok_ai_server/main/scripts/bootstrap.sh | bash
-# 진행 상황은 ~/bootstrap.log 에 남습니다.
+# 다시 실행하면 코드만 최신으로 바꾸고 다시 설치합니다 (.env, .venv 는 유지).
 set -euxo pipefail
 
-# 1. 스왑 (메모리 1GB 이하에서 dnf/pip 가 멈추지 않게)
+APP=~/chagok_ai_server
+
+# 1. 스왑
 SWAP_MB=$(free -m | awk '/Swap:/ {print $2}')
 if [ "${SWAP_MB:-0}" -lt 2000 ] && [ ! -f /swapfile2 ]; then
   sudo fallocate -l 2G /swapfile2
@@ -18,26 +20,18 @@ if systemctl list-unit-files | grep -q '^oracle-cloud-agent'; then
 fi
 free -h
 
-# 2. git
-if ! command -v git >/dev/null; then
-  if command -v dnf >/dev/null; then
-    sudo dnf install -y --setopt=install_weak_deps=False git
-  else
-    sudo apt-get update && sudo apt-get install -y git
-  fi
-fi
+# 2. 코드 (git 없이 압축 파일로)
+TMP=$(mktemp -d)
+curl -sL https://codeload.github.com/gachi-2-4/chagok_ai_server/tar.gz/refs/heads/main | tar xz -C "$TMP"
+mkdir -p "$APP"
+cp -r "$TMP"/chagok_ai_server-main/. "$APP"/
+rm -rf "$TMP"
+ls "$APP"
 
-# 3. 코드
-if [ -d ~/chagok_ai_server/.git ]; then
-  git -C ~/chagok_ai_server pull
+# 3. 설치 (.env 가 있을 때만)
+if [ -f "$APP/.env" ]; then
+  bash "$APP/scripts/install_server.sh"
 else
-  git clone https://github.com/gachi-2-4/chagok_ai_server.git ~/chagok_ai_server
-fi
-
-# 4. 설치 (.env 가 있을 때만)
-if [ -f ~/chagok_ai_server/.env ]; then
-  bash ~/chagok_ai_server/scripts/install_server.sh
-else
-  echo "BOOTSTRAP_DONE_NEED_ENV: ~/chagok_ai_server/.env 를 올린 뒤 bash ~/chagok_ai_server/scripts/install_server.sh 를 실행하세요."
+  echo "BOOTSTRAP_DONE_NEED_ENV: $APP/.env 를 올린 뒤 bash $APP/scripts/install_server.sh 를 실행하세요."
 fi
 echo BOOTSTRAP_FINISHED

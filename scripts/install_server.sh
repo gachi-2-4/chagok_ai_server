@@ -23,21 +23,17 @@ if systemctl list-unit-files | grep -q '^oracle-cloud-agent'; then
   sudo systemctl disable --now oracle-cloud-agent || true
 fi
 
-echo "== 3. Python 3.11+ 설치 =="
-if command -v dnf >/dev/null; then
-  sudo dnf install -y --setopt=install_weak_deps=False python3.11 python3.11-pip
-  PY=python3.11
-else
-  sudo apt-get update
-  sudo apt-get install -y python3 python3-venv python3-pip
-  PY=python3
+echo "== 3. Python 3.11 설치 (uv 사용, dnf/apt 없이) =="
+UV="$HOME/.local/bin/uv"
+if [ ! -x "$UV" ]; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
-$PY --version
+"$UV" --version
 
 echo "== 4. 가상환경 + 패키지 =="
-[ -d .venv ] || $PY -m venv .venv
-.venv/bin/pip install --no-cache-dir -q --upgrade pip
-.venv/bin/pip install --no-cache-dir -q -r requirements.txt
+[ -x .venv/bin/python ] || "$UV" venv --python 3.11 .venv
+UV_NO_CACHE=1 "$UV" pip install --python .venv/bin/python -r requirements.txt
+.venv/bin/python --version
 
 echo "== 5. 확인 =="
 [ -f .env ] || { echo "!! .env 파일이 없어요. 먼저 .env 를 올리세요."; exit 1; }
