@@ -21,8 +21,9 @@ class Settings(BaseSettings):
     openai_embedding_model: str = "text-embedding-3-small"
     openai_reasoning_effort: str = ""
 
-    # 법령 DB
+    # 법령 검색: LAW_DB_URL 이 있으면 DB, 없으면 LAW_INDEX_PATH 파일 (작은 서버용)
     law_db_url: str = ""
+    law_index_path: str = "data/law_index.npz"
     law_api_oc: str = ""
 
     # 제한값

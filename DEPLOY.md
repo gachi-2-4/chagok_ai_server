@@ -1,4 +1,30 @@
-# 오라클 프리티어 배포
+# 배포
+
+## A. 작은 서버 (메모리 1GB 이하, 오라클 Micro · Azure 1GB VM)
+
+Docker와 법령 DB 없이 Python으로 바로 실행합니다. 법령 검색은 `data/law_index.npz` 파일(약 14MB)로 합니다.
+
+```bash
+# 서버에서
+sudo dnf install -y git || sudo apt-get install -y git      # git 이 없을 때만
+git clone https://github.com/gachi-2-4/chagok_ai_server.git
+```
+```powershell
+# 내 PC(또는 Cloud Shell)에서 .env 올리기
+scp -i <키 파일> .env <사용자>@<공인 IP>:~/chagok_ai_server/.env
+```
+```bash
+# 서버에서
+cd ~/chagok_ai_server
+bash scripts/install_server.sh        # 스왑 → Python → 패키지 → systemd 서비스 → 방화벽
+curl localhost:8000/health
+```
+
+- 서비스 관리: `sudo systemctl restart chagok-ai`, 로그: `sudo journalctl -u chagok-ai -f`
+- 코드 업데이트: `git pull && sudo systemctl restart chagok-ai`
+- 법령을 새로 받으려면 내 PC에서 `python -m scripts.sync_laws` → `python -m scripts.export_law_index` → 커밋·푸시 → 서버에서 `git pull`
+
+## B. 큰 서버 (메모리 4GB 이상) — Docker + 법령 DB
 
 ## 1. 인스턴스 만들기
 - Compute → Instances → Create instance

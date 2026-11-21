@@ -31,7 +31,13 @@ class Container:
 def build_container(settings: Settings, backend: BackendClient | None = None, llm: LLMClient | None = None, laws: LawRepository | None = None) -> Container:
     backend = backend or BackendClient(settings)
     llm = llm or LLMClient(settings)
-    laws = laws or LawRepository(settings.law_db_url, llm)
+    if laws is None:
+        if settings.law_db_url:
+            laws = LawRepository(settings.law_db_url, llm)
+        else:
+            from app.legal.file_repository import FileLawRepository
+
+            laws = FileLawRepository(settings.law_index_path, llm)
     return Container(
         settings=settings,
         backend=backend,

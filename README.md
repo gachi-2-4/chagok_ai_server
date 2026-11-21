@@ -54,7 +54,11 @@ uvicorn app.main:app --reload
 pytest
 ```
 
-## Docker (오라클 서버)
+## 서버 배포
+
+자세한 순서는 [DEPLOY.md](DEPLOY.md)를 보세요. 메모리 1GB 이하 서버는 `bash scripts/install_server.sh`로 Docker 없이 설치합니다.
+
+## Docker (큰 서버)
 
 ```bash
 cp .env.example .env            # 값 채우기
@@ -75,7 +79,7 @@ docker compose exec ai python -m scripts.sync_laws   # 법령 동기화 (처음 
 3. 신청할 때 직접 정한 API 인증키(OC)를 `.env`의 `LAW_API_OC`에 넣습니다 (마이페이지 > API인증키관리에서 확인)
 4. 가져올 법령은 `data/target_laws.json`에서 관리합니다
 
-`LAW_API_OC`나 `LAW_DB_URL`이 없어도 서버는 동작합니다. 이때는 법령 검색 없이 규칙 엔진 점검만 합니다(`warnings: ["LAW_DB_UNAVAILABLE"]`).
+`LAW_DB_URL`이 없으면 `data/law_index.npz` 파일로 법령을 검색합니다 (작은 서버용, `scripts/export_law_index.py`로 생성). 파일도 없으면 법령 검색 없이 규칙 엔진만 동작합니다.
 
 ## OCR
 
